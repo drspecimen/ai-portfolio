@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Samson Ishola | AI Engineer</title>
+<meta name="description" content="Samson Ishola, AI Engineer in Lagos, Nigeria. LLMs, RAG, AI agents and machine learning in Python and FastAPI.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧭</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --s1:8px;--s2:16px;--s3:24px;--s4:32px;--s5:40px;--s6:48px;--s8:64px;--s12:96px;
+  --bg:#ffffff;--surface:#ffffff;--tint:#f5f7fa;
+  --ink:#14171f;--muted:#4b5260;--line:#e3e6eb;--line-strong:#c4cad3;
+  --accent:#1d3f8f;--accent-dark:#142d68;--on-accent:#ffffff;
+  --inverse:#14171f;--inverse-ink:#ffffff;--inverse-muted:#a7adb8;
+  --todo-bg:#fff2b8;--todo-ink:#5c4300;
+  --dot:190,196,206;--accent-rgb:29,63,143;
+  --r:6px;--max:1200px;--t:180ms;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1218;--surface:#161a22;--tint:#12161d;
+    --ink:#e8ebf0;--muted:#a3aab6;--line:#262c37;--line-strong:#3a4250;
+    --accent:#8fb0ff;--accent-dark:#b9cdff;--on-accent:#0f1218;
+    --inverse:#e8ebf0;--inverse-ink:#0f1218;--inverse-muted:#4b5260;
+    --todo-bg:#4a3b00;--todo-ink:#ffe7a0;
+    --dot:58,66,80;--accent-rgb:143,176,255;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f1218;--surface:#161a22;--tint:#12161d;
+  --ink:#e8ebf0;--muted:#a3aab6;--line:#262c37;--line-strong:#3a4250;
+  --accent:#8fb0ff;--accent-dark:#b9cdff;--on-accent:#0f1218;
+  --inverse:#e8ebf0;--inverse-ink:#0f1218;--inverse-muted:#4b5260;
+  --todo-bg:#4a3b00;--todo-ink:#ffe7a0;
+  --dot:58,66,80;--accent-rgb:143,176,255;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:calc(80px + env(safe-area-inset-top,0px))}
+body{margin:0;font-family:Manrope,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:clamp(1rem,.96rem + .2vw,1.125rem);line-height:1.6;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+h1,h2,h3,p,ul,ol,dl,dd,figure{margin:0}
+ul,ol{padding:0;list-style:none}
+a{color:var(--accent);text-underline-offset:3px;transition:color var(--t)}
+a:hover{color:var(--accent-dark)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:var(--r)}
+.skip{position:absolute;left:var(--s2);top:-100px;background:var(--inverse);color:var(--inverse-ink);padding:var(--s1) var(--s2);border-radius:var(--r);z-index:30}
+.skip:focus{top:var(--s2)}
+.container{width:100%;max-width:var(--max);margin:0 auto;padding:0 var(--s3)}
+.todo{background:var(--todo-bg);color:var(--todo-ink);border-radius:3px;padding:0 4px;font-weight:600}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 var(--s3);font:600 1rem/1 Manrope,system-ui,sans-serif;border-radius:var(--r);border:1px solid var(--line);text-decoration:none;transition:background-color var(--t),border-color var(--t),color var(--t);cursor:pointer}
+.btn--primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn--primary:hover{background:var(--accent-dark);border-color:var(--accent-dark);color:var(--on-accent)}
+.btn--secondary{background:var(--surface);color:var(--ink);border-color:var(--line-strong)}
+.btn--secondary:hover{border-color:var(--ink);color:var(--ink)}
+
+/* Nav */
+.nav{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+.nav__in{display:flex;align-items:center;justify-content:space-between;min-height:72px}
+.nav__brand{font-weight:800;color:var(--ink);text-decoration:none;letter-spacing:-.01em}
+.nav__brand:hover{color:var(--ink)}
+.nav__links{display:flex;align-items:center;gap:var(--s4)}
+.nav__links a:not(.btn){color:var(--ink);text-decoration:none;font-weight:500;font-size:.95rem}
+.nav__links a:not(.btn):hover{color:var(--accent)}
+.nav__links .btn{min-height:40px;font-size:.95rem}
+.nav__toggle{display:none;min-height:44px;padding:0 var(--s2);background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--r);font:500 .95rem Manrope,system-ui,sans-serif;color:var(--ink);cursor:pointer}
+
+/* Hero */
+.hero{position:relative;border-bottom:1px solid var(--line);overflow:hidden}
+.hero canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hero__in{position:relative;padding-top:var(--s12);padding-bottom:var(--s12);pointer-events:none}
+.hero__copy{max-width:780px;pointer-events:auto}
+.hero__id{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;margin-bottom:var(--s4);font-size:1rem}
+.hero__name{font-weight:800}
+.hero__role{font-weight:700;color:var(--accent)}
+.hero__tags{font-weight:500;color:var(--muted);flex-basis:100%}
+h1{font-size:clamp(2.25rem,1.3rem + 3.8vw,4.1rem);line-height:1.06;letter-spacing:-.04em;font-weight:800;max-width:13em}
+.lead{max-width:36em;margin-top:var(--s3);color:var(--muted)}
+.actions{display:flex;flex-wrap:wrap;gap:var(--s2);margin-top:var(--s4)}
+
+/* Sections */
+.section{padding:var(--s12) 0 0;border-bottom:1px solid var(--line)}
+.section--tint{background:var(--tint)}
+.head{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--s3);margin-bottom:var(--s6);align-items:start}
+.head h2{grid-column:span 5}
+.head>p,.head>div{grid-column:7 / span 6;max-width:36em}
+h2{font-size:clamp(1.625rem,1.2rem + 1.6vw,2.5rem);line-height:1.15;letter-spacing:-.03em;font-weight:800}
+h3{font-size:1.125rem;line-height:1.3;letter-spacing:-.01em;font-weight:700;margin-bottom:var(--s2)}
+.note{margin-top:var(--s1);font-size:.9rem;color:var(--muted)}
+.head .actions{margin-top:var(--s3)}
+.kicker{display:inline-block;align-self:flex-start;font-size:.85rem;font-weight:600;color:var(--accent);border:1px solid var(--line-strong);border-radius:var(--r);padding:2px 10px;margin-bottom:var(--s2)}
+
+/* Cards */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s3)}
+.cards--4{grid-template-columns:repeat(4,1fr)}
+.card{display:block;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:var(--s4);color:var(--ink);text-decoration:none;transition:border-color var(--t)}
+.card p+p{margin-top:var(--s1)}
+.card p{font-size:.95rem}
+.card strong{font-weight:700}
+a.card:hover{border-color:var(--line-strong)}
+.card--link:hover h3{color:var(--accent)}
+.card li{padding:var(--s1) 0;border-top:1px solid var(--line);font-size:.95rem}
+.card li:first-child{border-top:0;padding-top:0}
+.meta{color:var(--muted)}
+.links{display:flex;flex-direction:column;gap:4px;margin-top:var(--s2);font-size:.95rem;font-weight:600}
+.links--row{flex-direction:row;flex-wrap:wrap;gap:var(--s3);margin-top:var(--s5)}
+
+/* Steps */
+.steps{display:grid;gap:0;counter-reset:s;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);overflow:hidden}
+.steps--6{grid-template-columns:repeat(6,1fr)}
+.steps--5{grid-template-columns:repeat(5,1fr)}
+.steps--4{grid-template-columns:repeat(4,1fr)}
+.steps li{padding:var(--s3);border-left:1px solid var(--line);font-weight:700;counter-increment:s}
+.steps li:first-child{border-left:0}
+.steps li::before{content:counter(s);display:block;color:var(--accent);font-weight:700;font-size:.9rem;margin-bottom:var(--s1)}
+.steps li p{font-weight:400;color:var(--muted);font-size:.95rem;margin-top:4px}
+.steps h3{margin-bottom:var(--s1)}
+
+/* Bootcamp */
+.bootcamp{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s6);align-items:baseline;justify-content:space-between}
+.bootcamp h2{font-size:1.05rem;letter-spacing:0;font-weight:700;color:var(--muted)}
+.inline{display:flex;flex-wrap:wrap;gap:var(--s1) var(--s4);font-weight:600}
+
+/* Footer */
+.footer__links{display:flex;flex-wrap:wrap;gap:var(--s3)}
+.footer strong{color:var(--ink)}
+
+/* Reveal */
+.reveal{opacity:0;transform:translateY(12px);transition:opacity 500ms ease,transform 500ms ease}
+.reveal.in{opacity:1;transform:none}
+
+@media (max-width:1024px){
+  .cards,.cards--4{grid-template-columns:repeat(2,1fr)}
+  .steps--6,.steps--5{grid-template-columns:repeat(3,1fr)}
+  .steps--6 li:nth-child(4),.steps--5 li:nth-child(4){border-left:0}
+  .steps--6 li:nth-child(n+4),.steps--5 li:nth-child(n+4){border-top:1px solid var(--line)}
+  .steps--4{grid-template-columns:repeat(2,1fr)}
+  .steps--4 li:nth-child(3){border-left:0}
+  .steps--4 li:nth-child(n+3){border-top:1px solid var(--line)}
+  .head h2{grid-column:1 / -1}
+  .head>p,.head>div{grid-column:1 / -1}
+}
+@media (max-width:720px){
+  .section{padding:var(--s8) 0 0}
+  .hero__in{padding-top:var(--s8);padding-bottom:var(--s8)}
+  .nav__toggle{display:inline-flex;align-items:center}
+  .nav__links{display:none;position:absolute;top:100%;left:0;right:0;flex-direction:column;align-items:stretch;gap:0;background:var(--bg);border-bottom:1px solid var(--line);padding:var(--s1) var(--s3) var(--s3)}
+  .nav__links.open{display:flex}
+  .nav__links a:not(.btn){padding:var(--s2) 0;border-bottom:1px solid var(--line)}
+  .nav__links .btn{margin-top:var(--s2);min-height:48px}
+  .cards,.cards--4,.steps--4,.steps--5,.steps--6{grid-template-columns:1fr}
+  .steps--4 li,.steps--5 li,.steps--6 li{border-left:0;border-top:1px solid var(--line)}
+  .steps--4 li:first-child,.steps--5 li:first-child,.steps--6 li:first-child{border-top:0}
+  .actions .btn{flex:1 1 auto}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .reveal{opacity:1;transform:none;transition:none}
+  *{transition-duration:0s!important}
+}
+
+/* Status pill */
+.status{display:inline-flex;align-items:center;gap:var(--s1);font-size:.9rem;font-weight:500;color:var(--muted);border:1px solid var(--line);background:var(--surface);border-radius:var(--r);padding:4px var(--s2);margin-bottom:var(--s4);text-decoration:none;transition:border-color var(--t),color var(--t)}
+.status__dot{position:relative;width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.status__dot::after{content:"";position:absolute;inset:0;border-radius:50%;border:1px solid var(--accent);animation:ping 2.6s ease-out infinite}
+.status__go{max-width:0;margin-left:-8px;opacity:0;overflow:hidden;white-space:nowrap;color:var(--accent);font-weight:700;transition:max-width 220ms,margin 220ms,opacity 220ms}
+.status:hover,.status:focus-visible{border-color:var(--accent);color:var(--ink)}
+.status:hover .status__go,.status:focus-visible .status__go{max-width:96px;margin-left:0;opacity:1}
+@keyframes ping{0%{transform:scale(1);opacity:.9}70%,100%{transform:scale(3.4);opacity:0}}
+
+/* Progress, bridges */
+.progress{position:fixed;top:0;left:0;right:0;height:2px;z-index:40}
+.progress span{display:block;height:100%;background:var(--accent);transform:scaleX(0);transform-origin:left}
+.bridge{position:relative;height:56px;margin-top:var(--s8)}
+.bridge canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+#contact{padding-bottom:var(--s12)}
+
+/* Roles marquee */
+.roles{padding:var(--s4) 0;border-bottom:1px solid var(--line);overflow:hidden}
+.roles__label{font-size:.9rem;font-weight:600;letter-spacing:0;color:var(--muted);margin-bottom:var(--s2)}
+.marquee{overflow:hidden}
+.marquee__track{display:flex;width:max-content;animation:slide 60s linear infinite}
+.marquee:hover .marquee__track{animation-play-state:paused}
+.marquee ul{display:flex;gap:var(--s2);padding-right:var(--s2)}
+.marquee li{white-space:nowrap;border:1px solid var(--line);border-radius:var(--r);padding:var(--s1) var(--s3);font-weight:600;background:var(--surface)}
+.marquee li:nth-child(even){background:var(--tint)}
+@keyframes slide{from{transform:translateX(-50%)}to{transform:translateX(0)}}
+
+/* Carousel */
+.carousel__track{display:flex;gap:var(--s3);overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+.carousel__track::-webkit-scrollbar{display:none}
+.slide{flex:0 0 calc((100% - 48px) / 3);scroll-snap-align:start;display:flex;flex-direction:column}
+.slide .links{margin-top:auto;padding-top:var(--s2)}
+.carousel__bar{display:flex;align-items:center;gap:var(--s3);margin-top:var(--s4)}
+.carousel__count{min-width:8em;font-size:.95rem;font-weight:600;font-variant-numeric:tabular-nums}
+.carousel__progress{flex:1;height:2px;background:var(--line);overflow:hidden}
+.carousel__progress span{display:block;height:100%;background:var(--accent);transform:scaleX(.5);transform-origin:left;transition:transform 300ms ease}
+.carousel__btns{display:flex;gap:var(--s1)}
+.carousel__btns .btn{min-width:48px;padding:0 var(--s2)}
+.btn:disabled{opacity:.4;cursor:default}
+
+/* Case study bento */
+.bento{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--s3)}
+.b{grid-column:span 4;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:var(--s4)}
+.b--12{grid-column:1 / -1}.b--6{grid-column:span 6}.b--8{grid-column:span 8}
+.b h3{font-size:.95rem;font-weight:600;color:var(--muted)}
+.b p{font-size:.95rem}
+.b p+p{margin-top:var(--s1)}
+.b--lead p{font-size:clamp(1.2rem,1rem + .9vw,1.6rem);line-height:1.3;letter-spacing:-.02em;font-weight:700}
+.b--dark{background:var(--inverse);border-color:var(--inverse);color:var(--inverse-ink)}
+.b--dark h3{color:var(--inverse-muted)}
+.b--dark a{color:var(--inverse-ink)}
+.b--dark .links--row{margin-top:var(--s3)}
+.b ul.plain li{font-size:.95rem;padding:6px 0;border-top:1px solid var(--line)}
+.b ul.plain li:first-child{border-top:0;padding-top:0}
+.b .steps{border:0;border-radius:0;background:transparent}
+.b .steps li:first-child{padding-left:0}
+.chips{display:flex;flex-wrap:wrap;gap:var(--s1)}
+.chips li{border:1px solid var(--line);border-radius:var(--r);padding:4px 12px;font-size:.9rem;font-weight:600}
+.flow{--gap:28px;display:grid;grid-template-columns:repeat(6,1fr);gap:var(--gap);margin:var(--s4) 0 var(--s3)}
+.flow li{position:relative;border:1px solid var(--line);border-radius:var(--r);padding:var(--s2) var(--s1);text-align:center;font-weight:700;font-size:.92rem;background:var(--surface);animation:lit 9s linear infinite;animation-delay:calc(var(--i) * 1.5s)}
+.flow li small{display:block;font-weight:500;color:var(--muted);font-size:.78rem;margin-top:2px}
+.flow li:not(:last-child)::after{content:"";position:absolute;left:100%;top:50%;width:var(--gap);height:1px;background:var(--line-strong)}
+.flow li:not(:last-child)::before{content:"";position:absolute;left:100%;top:50%;width:6px;height:6px;margin-top:-3px;border-radius:50%;background:var(--accent);z-index:1;opacity:0;animation:travel 9s linear infinite;animation-delay:calc(var(--i) * 1.5s)}
+@keyframes lit{0%,13%{border-color:var(--accent);color:var(--accent)}16%,100%{border-color:var(--line);color:var(--ink)}}
+@keyframes travel{0%,7%{opacity:0;transform:translateX(0)}8%{opacity:1}15%{opacity:1;transform:translateX(calc(var(--gap) - 6px))}16%,100%{opacity:0}}
+@keyframes travely{0%,7%{opacity:0;transform:translateY(0)}8%{opacity:1}15%{opacity:1;transform:translateY(calc(var(--gap) - 6px))}16%,100%{opacity:0}}
+
+/* Footer */
+.footer{position:relative;overflow:hidden;min-height:280px;display:flex;align-items:flex-end;padding:var(--s4) 0 calc(var(--s4) + env(safe-area-inset-bottom,0px));font-size:.95rem;color:var(--muted)}
+.footer canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.footer__in{position:relative;display:flex;flex-wrap:wrap;gap:var(--s2) var(--s4);justify-content:space-between}
+
+/* Setup bar (local preview only) */
+.setup{position:fixed;left:var(--s2);right:var(--s2);bottom:calc(var(--s2) + env(safe-area-inset-bottom,0px));z-index:50;background:var(--todo-bg);color:var(--todo-ink);border-radius:var(--r);padding:var(--s1) var(--s2);font-size:.9rem;font-weight:600;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.setup[hidden]{display:none}
+
+@media (max-width:1024px){
+  .slide{flex-basis:calc((100% - 24px) / 2)}
+  .b,.b--8{grid-column:span 6}.b--12{grid-column:1 / -1}.b--8{grid-column:1 / -1}
+  .flow{grid-template-columns:repeat(3,1fr)}
+  .flow li:nth-child(3)::after,.flow li:nth-child(3)::before{display:none}
+}
+@media (max-width:720px){
+  .slide{flex-basis:88%}
+  .carousel__count{min-width:6.5em}
+  .b,.b--6,.b--8{grid-column:1 / -1}
+  .bridge{margin-top:var(--s6)}
+  #contact{padding-bottom:var(--s8)}
+  .flow{grid-template-columns:1fr;--gap:28px}
+  .flow li:nth-child(3)::after,.flow li:nth-child(3)::before{display:block}
+  .flow li:not(:last-child)::after{left:50%;top:100%;width:1px;height:var(--gap)}
+  .flow li:not(:last-child)::before{left:50%;top:100%;margin:0 0 0 -3px;animation-name:travely}
+  .footer{min-height:240px}
+}
+@media (prefers-reduced-motion:reduce){
+  .marquee__track{animation:none;width:auto;flex-wrap:wrap}
+  .marquee ul[aria-hidden]{display:none}
+  .marquee ul{flex-wrap:wrap}
+  .flow li,.flow li::before,.status__dot::after{animation:none}
+  .carousel__track{scroll-behavior:auto}
+}
+
+/* Hero stats */
+.stats{display:flex;flex-wrap:wrap;gap:var(--s3) var(--s6);margin-top:var(--s5)}
+.stats div{min-width:8em}
+.stats dt{font-size:clamp(1.5rem,1.2rem + 1vw,2rem);font-weight:800;letter-spacing:-.03em;line-height:1.1}
+.stats dd{color:var(--muted);font-size:.9rem;margin-top:2px}
+/* Status tags on build steps */
+.tag{display:inline-block;margin-top:var(--s1);font-size:.75rem;font-weight:700;padding:2px 8px;border-radius:999px;border:1px solid var(--line-strong);color:var(--muted)}
+.tag--active{border-color:var(--accent);color:var(--accent)}
+.tag--done{border-color:var(--accent);background:var(--accent);color:var(--on-accent)}
+.cards--2{grid-template-columns:repeat(2,1fr);margin-top:var(--s3)}
+.contact-list{display:grid;gap:var(--s1);margin-top:var(--s3);font-weight:600}
+.contact-list span{display:inline-block;min-width:5.5em;color:var(--muted);font-weight:500}
+@media (max-width:720px){.cards--2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="progress" aria-hidden="true"><span></span></div>
+
+<header class="nav">
+  <div class="container nav__in">
+    <a class="nav__brand" href="#top">Samson Ishola</a>
+    <button class="nav__toggle" aria-expanded="false" aria-controls="menu">Menu</button>
+    <nav id="menu" class="nav__links" aria-label="Primary">
+      <a href="#work">Work</a>
+      <a href="#docuchat">Case study</a>
+      <a href="#skills">Skills</a>
+      <a href="#about">About me</a>
+      <a href="#contact">Contact</a>
+      <a class="btn btn--primary" href="#contact">Let's talk</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<section class="hero" id="top" aria-labelledby="hero-title">
+  <canvas id="dots" aria-hidden="true"></canvas>
+  <div class="container hero__in">
+    <div class="hero__copy">
+      <a class="status" href="#contact"><span class="status__dot" aria-hidden="true"></span>Open to AI engineering roles<span class="status__go">Say hello</span></a>
+      <p class="hero__id"><span class="hero__name">Samson Ishola</span><span class="hero__role">AI Engineer</span><span class="hero__tags">LLMs, RAG, AI agents and machine learning in Python</span></p>
+      <h1 id="hero-title">I turn AI research into systems people can trust.</h1>
+      <p class="lead">AI Engineer and researcher with over four years of designing, building and evaluating machine learning and generative AI solutions, from predictive models to retrieval pipelines and AI agents. I founded Drspecimen Intellisense Group (DIG), where I build AI tools for education, finance and technology, and train teams to use AI well.</p>
+      <div class="actions">
+        <a class="btn btn--primary" href="#work">View my work</a>
+        <a class="btn btn--secondary" href="https://github.com/drspecimen" target="_blank" rel="noopener">GitHub</a>
+        <a class="btn btn--secondary" href="https://www.linkedin.com/in/samson-ishola-431747125/" target="_blank" rel="noopener">LinkedIn</a>
+        <a class="btn btn--secondary" href="cv.pdf" target="_blank" rel="noopener">Download CV</a>
+      </div>
+      <dl class="stats">
+        <div><dt>4+ years</dt><dd>in AI, ML and data</dd></div>
+        <div><dt>6</dt><dd>professional certifications</dd></div>
+        <div><dt>Since 2022</dt><dd>leading R&amp;D at DIG</dd></div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<section class="roles" aria-labelledby="roles-title">
+  <div class="container"><h2 class="roles__label" id="roles-title">Open to roles such as</h2></div>
+  <div class="marquee"><div class="marquee__track"><ul><li>AI Engineer</li><li>Machine Learning Engineer</li><li>LLM Application Developer</li><li>RAG Engineer</li><li>Applied AI Engineer</li><li>AI Research Engineer</li><li>Python Backend Engineer</li><li>Data Scientist</li><li>AI Solutions Engineer</li><li>AI Trainer</li></ul><ul aria-hidden="true"><li>AI Engineer</li><li>Machine Learning Engineer</li><li>LLM Application Developer</li><li>RAG Engineer</li><li>Applied AI Engineer</li><li>AI Research Engineer</li><li>Python Backend Engineer</li><li>Data Scientist</li><li>AI Solutions Engineer</li><li>AI Trainer</li></ul></div></div>
+</section>
+
+<section class="section" id="work" aria-labelledby="work-title">
+  <div class="container">
+    <div class="head">
+      <h2 id="work-title">Selected work</h2>
+      <div>
+        <p>DocuChat, my bootcamp capstone, comes first. After it is work from my research and development practice, from machine learning to generative AI.</p>
+      </div>
+    </div>
+    <div class="carousel" role="region" aria-roledescription="carousel" aria-label="Selected projects">
+      <ul class="carousel__track" id="track" tabindex="0" aria-label="Projects, use arrow keys to scroll">
+      <li class="card slide" role="group" aria-roledescription="slide" aria-label="1 of 5"><span class="kicker">Bootcamp project</span><h3>DocuChat</h3>
+        <p><strong>Problem.</strong> Finding answers in long documents is slow, and plain chatbots make answers up.</p>
+        <p><strong>Built.</strong> A FastAPI backend where people upload documents and ask questions. Answers cite the passages they came from, and a research agent searches across files.</p>
+        <p><strong>Stack.</strong> Python, FastAPI, SQLAlchemy, PostgreSQL with pgvector, Redis, Celery</p>
+        <p><strong>AI component.</strong> Embeddings, retrieval-augmented generation, a guarded tool-using agent and an MCP server.</p>
+        <p class="links"><a href="https://github.com/drspecimen/docuchat" target="_blank" rel="noopener">GitHub, DocuChat</a><a href="#docuchat">Case study, DocuChat</a></p></li>
+      <li class="card slide" role="group" aria-roledescription="slide" aria-label="2 of 5"><span class="kicker">Machine learning</span><h3>Learning Analytics System</h3>
+        <p><strong>Problem.</strong> Schools often spot struggling learners only after results are out, when it is too late to help.</p>
+        <p><strong>Built.</strong> Predictive models that forecast learner performance, benchmarked for accuracy and scale, with an interactive dashboard that turns the forecasts into clear actions.</p>
+        <p><strong>Stack.</strong> Python, TensorFlow, scikit-learn, Power BI</p>
+        <p><strong>AI component.</strong> Supervised machine learning models that predict learner outcomes from performance data.</p>
+        <p class="links"><a href="https://github.com/drspecimen/learning-analytics-system" target="_blank" rel="noopener">GitHub, Learning Analytics System</a></p></li>
+      <li class="card slide" role="group" aria-roledescription="slide" aria-label="3 of 5"><span class="kicker">Generative AI</span><h3>Higher-Education Code Generator</h3>
+        <p><strong>Problem.</strong> Turning a teaching exercise into working example code takes lecturers and students a lot of time.</p>
+        <p><strong>Built.</strong> A Python and FastAPI service that converts educational prompts into executable code, using reusable prompt templates.</p>
+        <p><strong>Stack.</strong> Python, FastAPI, LangChain</p>
+        <p><strong>AI component.</strong> LLM workflows orchestrated with LangChain, evaluated for code accuracy and latency, with templates refined for consistency.</p>
+        <p class="links meta">Code available on request</p></li>
+      <li class="card slide" role="group" aria-roledescription="slide" aria-label="4 of 5"><span class="kicker">Full-stack platform</span><h3>DIG Digital Platform</h3>
+        <p><strong>Problem.</strong> DIG needed one home for research publishing, learning content and client engagement.</p>
+        <p><strong>Built.</strong> A responsive web platform with a companion mobile app: user management, content publishing, notifications and analytics dashboards.</p>
+        <p><strong>Stack.</strong> PHP, MySQL, JavaScript</p>
+        <p><strong>AI component.</strong> Built with AI-assisted development; delivers DIG's AI training and research products.</p>
+        <p class="links"><a href="https://drspecimen.online" target="_blank" rel="noopener">Live site, DIG Platform</a></p></li>
+      <li class="card slide" role="group" aria-roledescription="slide" aria-label="5 of 5"><span class="kicker">Software engineering</span><h3>Bank App</h3>
+        <p><strong>Problem.</strong> Practising object-oriented design on a familiar, rule-heavy domain.</p>
+        <p><strong>Built.</strong> A simple banking application written in Java.</p>
+        <p><strong>Stack.</strong> Java</p>
+        <p><strong>AI component.</strong> None. It shows core engineering in a second language.</p>
+        <p class="links"><a href="https://github.com/drspecimen/Bank-App" target="_blank" rel="noopener">GitHub, Bank App</a></p></li>
+      </ul>
+      <div class="carousel__bar">
+        <p class="carousel__count" id="cur" aria-live="polite">1 to 3 of 5</p>
+        <div class="carousel__progress" aria-hidden="true"><span id="prog"></span></div>
+        <div class="carousel__btns">
+          <button class="btn btn--secondary" id="prev" type="button" aria-label="Previous project"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path d="M10 3L5 8l5 5"/></svg></button>
+          <button class="btn btn--secondary" id="next" type="button" aria-label="Next project"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg></button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="bridge" aria-hidden="true"><canvas></canvas></div>
+</section>
+
+<section class="section section--tint" id="docuchat" aria-labelledby="cs-title">
+  <div class="container">
+    <div class="head">
+      <h2 id="cs-title">Case study: DocuChat</h2>
+      <div>
+        <p>The guided bootcamp capstone: a document question-and-answer backend. The class built it in TypeScript; I am rebuilding the same design in Python and FastAPI, the main language of AI engineering, one tested commit at a time.</p>
+      </div>
+    </div>
+    <div class="bento">
+      <article class="b b--12">
+        <h3>How a question gets answered</h3>
+        <ol class="flow" aria-label="Pipeline: upload, background job, chunk and embed, vector store, retrieve and generate, cited answer">
+          <li style="--i:0">Upload<small>202 Accepted</small></li>
+          <li style="--i:1">Background job<small>Celery worker</small></li>
+          <li style="--i:2">Chunk and embed<small>500-token chunks</small></li>
+          <li style="--i:3">Vector store<small>pgvector, HNSW</small></li>
+          <li style="--i:4">Retrieve and generate<small>RAG or agent</small></li>
+          <li style="--i:5">Cited answer<small>[Source N]</small></li>
+        </ol>
+      </article>
+      <article class="b b--6 b--lead"><h3>Problem</h3><p>People waste time hunting through long documents, and a chatbot that guesses is worse than no chatbot.</p></article>
+      <article class="b b--6 b--lead"><h3>Solution</h3><p>Answers drawn only from the user's own documents, each one tied to the passage it came from.</p></article>
+      <article class="b"><h3>AI component</h3><p>Documents are split by paragraph, line and sentence, then embedded. A question pulls the closest passages above a relevance floor, fits them into a token budget and sends them to the model at temperature 0.1.</p></article>
+      <article class="b"><h3>My contribution</h3><p>I am building every layer myself in Python: routes, services and repositories, JWT auth, role-based access, background workers, caching, rate limits, retrieval, the agent and the MCP server, each with tests and CI.</p></article>
+      <article class="b"><h3>Challenges</h3><p>Stopping made-up answers: when nothing scores above 0.3, the system says it could not find the answer. Keeping slow AI calls outside database transactions, so a model timeout never holds a connection.</p></article>
+      <article class="b"><h3>Technology</h3><ul class="chips"><li>Python</li><li>FastAPI</li><li>Pydantic</li><li>SQLAlchemy</li><li>Alembic</li><li>PostgreSQL</li><li>pgvector</li><li>Redis</li><li>Celery</li><li>OpenAI API</li><li>MCP SDK</li><li>pytest</li></ul></article>
+      <article class="b"><h3>Production safeguards</h3><ul class="plain"><li>Settings validated at startup; secrets never logged</li><li>Per-tier rate limits on auth, uploads and chat</li><li>Retries, backoff and a circuit breaker on model calls</li><li>Structured logs, metrics and health checks</li></ul></article>
+      <article class="b"><h3>Agent guardrails</h3><ul class="plain"><li>At most 10 steps per request</li><li>60-second time limit</li><li>$0.50 cost ceiling per request</li><li>Only whitelisted tools, every step traced</li></ul></article>
+      <article class="b b--12 b--dark"><h3>Design target</h3><p>A backend that answers with citations, refuses to guess, and controls AI spending with monthly budgets per user tier, prompt versioning, model fallback and an audit log of every AI call.</p>
+        <p class="links links--row"><a href="https://github.com/drspecimen/docuchat" target="_blank" rel="noopener">GitHub, DocuChat repository</a></p></article>
+      <article class="b b--12">
+        <h3>Build progress</h3>
+        <ol class="steps steps--5">
+          <li>Foundation<p>Layered FastAPI app, validated settings, structured logging, database layer, auth, tests and CI.</p><span class="tag tag--active">In progress</span></li>
+          <li>Business logic<p>Role-based access, transactions, soft deletes, background queues and resilient external calls.</p><span class="tag">Next</span></li>
+          <li>Production hardening<p>Caching, rate limiting, input sanitising, security headers, metrics and health checks.</p><span class="tag">Planned</span></li>
+          <li>AI layer<p>pgvector, cached embeddings, ingestion pipeline, RAG with citations and the research agent.</p><span class="tag">Planned</span></li>
+          <li>Control and MCP<p>Prompt versioning, model fallback, cost budgets, AI audit logs and an MCP server.</p><span class="tag">Planned</span></li>
+        </ol>
+      </article>
+    </div>
+  </div>
+  <div class="bridge" aria-hidden="true"><canvas></canvas></div>
+</section>
+
+<section class="section section--tint" id="skills" aria-labelledby="skills-title">
+  <div class="container">
+    <div class="head">
+      <h2 id="skills-title">Technical skills</h2>
+      <p>The tools I use to take an AI idea from research to a working, tested system.</p>
+    </div>
+    <div class="cards cards--4">
+      <div class="card"><h3>AI and machine learning</h3><ul><li>Large language models and prompt engineering</li><li>RAG and embeddings</li><li>LangChain and AI agents</li><li>PyTorch and TensorFlow</li><li>scikit-learn</li></ul></div>
+      <div class="card"><h3>Backend engineering</h3><ul><li>Python</li><li>FastAPI and REST API design</li><li>SQLAlchemy and Alembic</li><li>Java</li><li>HTML, CSS and JavaScript</li></ul></div>
+      <div class="card"><h3>Data and analytics</h3><ul><li>SQL, MySQL, PostgreSQL, SQLite</li><li>Power BI and Excel</li><li>Statistical analysis (JASP)</li><li>Quantitative and qualitative research</li></ul></div>
+      <div class="card"><h3>Cloud and delivery</h3><ul><li>Azure AI apps and agents</li><li>MLOps practices</li><li>Git and GitHub</li><li>Testing and structured logging</li></ul></div>
+    </div>
+  </div>
+  <div class="bridge" aria-hidden="true"><canvas></canvas></div>
+</section>
+
+<section class="section" id="approach" aria-labelledby="approach-title">
+  <div class="container">
+    <div class="head">
+      <h2 id="approach-title">Engineering approach</h2>
+      <p>Research taught me to measure before I trust. An AI system people cannot rely on is worse than no system, so I set the limits before writing the clever part.</p>
+    </div>
+    <ol class="steps steps--6">
+      <li>Understand<p>Who has the problem, and what they do today.</p></li>
+      <li>Design<p>Clear layers, so each part can change alone.</p></li>
+      <li>Set limits<p>Budgets, rate limits and guardrails come first.</p></li>
+      <li>Build<p>Small pieces, validated at every boundary.</p></li>
+      <li>Evaluate<p>Accuracy, latency and cost, measured not guessed.</p></li>
+      <li>Observe<p>Logs and metrics that explain every failure.</p></li>
+    </ol>
+  </div>
+  <div class="bridge" aria-hidden="true"><canvas></canvas></div>
+</section>
+
+<section class="section section--tint" id="about" aria-labelledby="about-title">
+  <div class="container">
+    <div class="head">
+      <h2 id="about-title">About me</h2>
+      <p>I am Samson Ishola, an AI Engineer and researcher in Lagos, Nigeria. Since 2022 I have led research and development at Drspecimen Intellisense Group (DIG): gathering requirements with clients, then designing, building and evaluating AI and machine learning solutions for education, finance and technology. I also train company teams on how AI works and where it helps.</p>
+    </div>
+    <ol class="steps steps--4">
+      <li><h3>Teaching</h3><p>2019 to 2021. Taught mathematics and science. In 2021 my students won an All-African mathematics competition and I was named Most Outstanding Mathematics Teacher.</p></li>
+      <li><h3>Research and development</h3><p>2022 to now. Founded DIG. AI research, ML models, dashboards and LangChain prototypes for retrieval-augmented generation.</p></li>
+      <li><h3>Bootcamp</h3><p>2026. Mastering Backend's AI Engineering Bootcamp: production backends, RAG, agents, MCP and AI cost control.</p></li>
+      <li><h3>Next</h3><p>MSc in Financial Engineering at WorldQuant University, and AI systems for finance and education.</p></li>
+    </ol>
+    <div class="cards cards--2">
+      <div class="card"><h3>Certifications</h3><ul><li>Microsoft Certified: Azure AI Apps and Agents Developer Associate</li><li>Microsoft Certified: Machine Learning Operations Engineer Associate</li><li>Google Advanced Data Analytics Professional Certificate</li><li>Google Data Analytics Professional Certificate</li><li>Google Project Management Professional Certificate</li><li>Microsoft Project Management Professional Certificate</li></ul></div>
+      <div class="card"><h3>Education</h3><ul><li><strong>MSc, Financial Engineering</strong><br><span class="meta">WorldQuant University, 2025 to present</span></li><li><strong>BSc, Mathematics and Computer Science</strong><br><span class="meta">National Open University of Nigeria, 2023 to 2026</span></li><li><strong>HND, Physics with Electronics</strong><br><span class="meta">Moshood Abiola Polytechnic, 2014 to 2019</span></li></ul></div>
+    </div>
+  </div>
+  <div class="bridge" aria-hidden="true"><canvas></canvas></div>
+</section>
+
+<section class="section" id="github" aria-labelledby="gh-title">
+  <div class="container">
+    <div class="head">
+      <h2 id="gh-title">Code behind the work</h2>
+      <div>
+        <p>Repositories for the projects on this page, each with setup instructions in its README.</p>
+        <p class="actions"><a class="btn btn--primary" href="https://github.com/drspecimen" target="_blank" rel="noopener">View GitHub profile</a></p>
+      </div>
+    </div>
+    <div class="cards">
+      <a class="card card--link" href="https://github.com/drspecimen/docuchat" target="_blank" rel="noopener"><h3>docuchat</h3><p>Document Q&amp;A backend with cited answers, a research agent and an MCP server.</p><p class="meta">Python, bootcamp project</p></a>
+      <a class="card card--link" href="https://github.com/drspecimen/learning-analytics-system" target="_blank" rel="noopener"><h3>learning-analytics-system</h3><p>Models that forecast learner performance, with a dashboard for action.</p><p class="meta">Python, machine learning</p></a>
+      <a class="card card--link" href="https://github.com/drspecimen/Bank-App" target="_blank" rel="noopener"><h3>Bank-App</h3><p>A simple banking application built to practise object-oriented design.</p><p class="meta">Java</p></a>
+    </div>
+  </div>
+  <div class="bridge" aria-hidden="true"><canvas></canvas></div>
+</section>
+
+<section class="section section--tint" id="bootcamp" aria-labelledby="bc-title">
+  <div class="container">
+    <div class="bootcamp">
+      <h2 id="bc-title">Mastering Backend, AI Engineering Bootcamp, 2026</h2>
+      <ul class="inline"><li>AI engineering</li><li>Backend development</li><li>Project-based learning</li></ul>
+    </div>
+  </div>
+  <div class="bridge" aria-hidden="true"><canvas></canvas></div>
+</section>
+
+<section class="section" id="contact" aria-labelledby="contact-title">
+  <div class="container">
+    <div class="head">
+      <h2 id="contact-title">Let's build something useful.</h2>
+      <div>
+        <p>I am open to AI engineering roles, collaborations and projects in finance, education and technology. Email is the fastest way to reach me.</p>
+        <p class="contact-list">
+          <a href="mailto:isholanthonysamson@gmail.com"><span>Email</span>isholanthonysamson@gmail.com</a>
+          <a href="tel:+2348106692300"><span>Phone</span>+234 810 669 2300</a>
+          <span class="meta"><span>Location</span>Lagos, Nigeria</span>
+        </p>
+        <p class="actions">
+          <a class="btn btn--primary" href="mailto:isholanthonysamson@gmail.com">Email me</a>
+          <a class="btn btn--secondary" href="https://www.linkedin.com/in/samson-ishola-431747125/" target="_blank" rel="noopener">LinkedIn</a>
+          <a class="btn btn--secondary" href="https://github.com/drspecimen" target="_blank" rel="noopener">GitHub</a>
+          <a class="btn btn--secondary" href="cv.pdf" target="_blank" rel="noopener">Download CV</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+  <canvas id="ripples" aria-hidden="true"></canvas>
+  <div class="container footer__in">
+    <p><strong>Samson Ishola</strong>, AI Engineer</p>
+    <p class="footer__links"><a href="https://github.com/drspecimen" target="_blank" rel="noopener">GitHub</a><a href="https://www.linkedin.com/in/samson-ishola-431747125/" target="_blank" rel="noopener">LinkedIn</a><a href="cv.pdf" target="_blank" rel="noopener">CV</a><a href="mailto:isholanthonysamson@gmail.com">Email</a></p>
+    <p>2026</p>
+  </div>
+</footer>
+<p class="setup" id="setup" hidden></p>
+<script>
+(function () {
+  'use strict';
+  var $ = function (s) { return document.querySelector(s); };
+  var all = function (s) { return Array.prototype.slice.call(document.querySelectorAll(s)); };
+  var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var touch = matchMedia('(hover: none)').matches;
+  var G = [190, 196, 206], D = [29, 63, 143];
+  var dpr = function () { return Math.min(window.devicePixelRatio || 1, 2); };
+
+  function readColors() {
+    var cs = getComputedStyle(document.documentElement);
+    var p = function (n, f) { var v = cs.getPropertyValue(n).split(',').map(Number); return v.length === 3 && !v.some(isNaN) ? v : f; };
+    G = p('--dot', G); D = p('--accent-rgb', D);
+  }
+  readColors();
+
+  function dot(c, x, y, r, g, a) {
+    var k = function (i) { return Math.round(G[i] + (D[i] - G[i]) * g); };
+    c.globalAlpha = a; c.fillStyle = 'rgb(' + k(0) + ',' + k(1) + ',' + k(2) + ')';
+    c.beginPath(); c.arc(x, y, r, 0, 6.2832); c.fill();
+  }
+
+  // Local preview helper: counts placeholders still left to replace
+  var local = location.protocol === 'file:' || /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+  if (local) {
+    var left = all('a[href]').filter(function (a) { return /YOUR_|GROUP_REPO_/.test(a.getAttribute('href')); }).length;
+    var todos = all('.todo').length;
+    if (left || todos) {
+      var bar = $('#setup'); bar.hidden = false;
+      bar.textContent = 'Setup check (only visible locally): ' + left + ' links and ' + todos + ' placeholder fields still need replacing.';
+    }
+  }
+
+  // Mobile menu
+  var toggle = $('.nav__toggle'), menu = $('#menu');
+  function setMenu(o) { menu.classList.toggle('open', o); toggle.setAttribute('aria-expanded', String(o)); }
+  toggle.addEventListener('click', function () { setMenu(!menu.classList.contains('open')); });
+  menu.addEventListener('click', function (e) { if (e.target.tagName === 'A') setMenu(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setMenu(false); });
+
+  // Scroll reveal
+  if ('IntersectionObserver' in window && !reduced) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+    }, { threshold: 0.12 });
+    all('.section .head, .carousel, .bento, .cards, .steps, .bootcamp').forEach(function (el) {
+      if (el.closest('.bento') && el.classList.contains('steps')) return;
+      el.classList.add('reveal'); io.observe(el);
+    });
+  }
+
+  // Shared dot-field canvas: sizing, visibility, pause and resume
+  function field(canvas, host, textEl, frame) {
+    var f = { ctx: canvas.getContext('2d'), w: 0, h: 0, fade: null, vis: true }, run = false, raf = 0, rt;
+    f.fadeAt = function (x, y) {
+      var a = f.fade; if (!a) return 1;
+      var dx = Math.max(a.l - x, 0, x - a.r), dy = Math.max(a.t - y, 0, y - a.b);
+      return 0.12 + 0.88 * Math.min(Math.sqrt(dx * dx + dy * dy) / 90, 1);
+    };
+    function loop(t) {
+      if (!run) return;
+      if (frame(f, t) === false) { run = false; return; }
+      raf = requestAnimationFrame(loop);
+    }
+    function halt() { run = false; cancelAnimationFrame(raf); }
+    f.wake = function () { if (reduced || run || !f.vis || document.hidden) return; run = true; raf = requestAnimationFrame(loop); };
+    f.size = function () {
+      var d = dpr(), hr = host.getBoundingClientRect(), c = textEl.getBoundingClientRect();
+      f.w = host.clientWidth; f.h = host.clientHeight;
+      canvas.width = f.w * d; canvas.height = f.h * d; f.ctx.setTransform(d, 0, 0, d, 0, 0);
+      f.fade = { l: c.left - hr.left, t: c.top - hr.top, r: c.right - hr.left, b: c.bottom - hr.top };
+      frame(f, performance.now());
+    };
+    new IntersectionObserver(function (e) { f.vis = e[0].isIntersecting; f.vis ? f.wake() : halt(); }).observe(host);
+    document.addEventListener('visibilitychange', function () { document.hidden ? halt() : f.wake(); });
+    window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(f.size, 120); });
+    f.size();
+    return f;
+  }
+
+  // Hero: wave plus cursor push
+  var hero = $('.hero'), hp = { x: -9999, y: -9999, tx: -9999, ty: -9999, on: false }, GAP = 28, R = 140;
+  var hf = field($('#dots'), hero, $('.hero__copy'), function (f, t) {
+    var c = f.ctx, s = reduced ? 0 : t * 0.001, cols = Math.ceil(f.w / GAP) + 1, rows = Math.ceil(f.h / GAP) + 1, i, j;
+    c.clearRect(0, 0, f.w, f.h);
+    if (touch && !reduced) { hp.x = f.w * (0.5 + 0.4 * Math.sin(s * 0.35)); hp.y = f.h * (0.5 + 0.3 * Math.sin(s * 0.5 + 1)); }
+    else { hp.x += (hp.tx - hp.x) * 0.12; hp.y += (hp.ty - hp.y) * 0.12; }
+    for (i = 0; i < cols; i++) for (j = 0; j < rows; j++) {
+      var bx = i * GAP, by = j * GAP, x = bx + Math.cos(j * 0.35 + s * 0.7) * 2, y = by + Math.sin(i * 0.35 + s * 0.8) * 3 + Math.cos(j * 0.3 + s * 0.6) * 2;
+      var n = 0, dx = x - hp.x, dy = y - hp.y, d = Math.sqrt(dx * dx + dy * dy);
+      if (!reduced && d < R) { n = 1 - d / R; n = n * n * (3 - 2 * n); x += dx / (d || 1) * n * 14; y += dy / (d || 1) * n * 14; }
+      dot(c, x, y, 1.4 + n * 1.8, n > 0.35 ? (n - 0.35) / 0.65 : 0, f.fadeAt(bx, by));
+    }
+    c.globalAlpha = 1;
+  });
+  hero.addEventListener('pointermove', function (e) {
+    if (e.pointerType === 'touch') return;
+    var r = hero.getBoundingClientRect(); hp.tx = e.clientX - r.left; hp.ty = e.clientY - r.top;
+    if (!hp.on) { hp.x = hp.tx; hp.y = hp.ty; hp.on = true; }
+  });
+  hero.addEventListener('pointerleave', function () { hp.tx = hp.ty = -9999; hp.on = false; });
+
+  // Footer: ripples that travel outward from the cursor or a tap
+  var foot = $('.footer'), rip = [], last = { x: -999, y: -999 };
+  var ff = field($('#ripples'), foot, $('.footer__in'), function (f, t) {
+    var c = f.ctx, S = 24, cols = Math.ceil(f.w / S) + 1, rows = Math.ceil(f.h / S) + 1, i, j, q;
+    c.clearRect(0, 0, f.w, f.h);
+    rip = rip.filter(function (r) { return t - r.t < 3200; });
+    for (i = 0; i < cols; i++) for (j = 0; j < rows; j++) {
+      var x = i * S, y = j * S, k = 0, ox = 0, oy = 0;
+      for (q = 0; q < rip.length; q++) {
+        var r = rip[q], age = (t - r.t) / 1000, dx = x - r.x, dy = y - r.y, d = Math.sqrt(dx * dx + dy * dy) || 1, off = d - age * 240;
+        var e = Math.exp(-off * off / 1800) * r.a * Math.max(0, 1 - age / 3);
+        k += e; ox += dx / d * e * 7; oy += dy / d * e * 7;
+      }
+      k = Math.min(k, 1);
+      dot(c, x + ox, y + oy, 1.4 + 2.4 * k, k > 0.3 ? (k - 0.3) / 0.7 : 0, f.fadeAt(x, y));
+    }
+    c.globalAlpha = 1;
+    return rip.length > 0;
+  });
+  function spawn(x, y, a) {
+    if (reduced) return;
+    rip.push({ x: x, y: y, t: performance.now(), a: a }); if (rip.length > 8) rip.shift(); ff.wake();
+  }
+  function pos(e) { var r = foot.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
+  foot.addEventListener('pointermove', function (e) {
+    if (e.pointerType === 'touch') return;
+    var p = pos(e), dx = p.x - last.x, dy = p.y - last.y;
+    if (dx * dx + dy * dy > 4900) { last = p; spawn(p.x, p.y, 0.7); }
+  });
+  foot.addEventListener('pointerdown', function (e) { var p = pos(e); spawn(p.x, p.y, 1.1); });
+  if (touch && !reduced) setInterval(function () { if (ff.vis) spawn(Math.random() * ff.w, Math.random() * ff.h, 0.8); }, 2800);
+
+  // Section bridges: a pulse of dots follows scroll position. Also the progress line.
+  var prog = $('.progress span'), pend = false;
+  var bridges = all('.bridge').map(function (el) {
+    var cv = el.firstElementChild; return { el: el, cv: cv, c: cv.getContext('2d'), w: 0, h: 0, vis: false };
+  });
+  function bsize(b) {
+    var d = dpr(); b.w = b.el.clientWidth; b.h = b.el.clientHeight;
+    b.cv.width = b.w * d; b.cv.height = b.h * d; b.c.setTransform(d, 0, 0, d, 0, 0);
+  }
+  function bdraw(b) {
+    var r = b.el.getBoundingClientRect(), vh = window.innerHeight, i;
+    var p = Math.min(Math.max((vh - r.top) / (vh + r.height), 0), 1), px = reduced ? -9999 : p * b.w;
+    b.c.clearRect(0, 0, b.w, b.h);
+    for (i = 0; i * 16 < b.w + 16; i++) {
+      var x = i * 16 + 8, dx = x - px, g = Math.exp(-dx * dx / 24200);
+      dot(b.c, x, b.h / 2 - g * 8, 1.2 + 2.6 * g, g > 0.25 ? (g - 0.25) / 0.75 : 0, 1);
+    }
+    b.c.globalAlpha = 1;
+  }
+  function sched() {
+    if (pend) return; pend = true;
+    requestAnimationFrame(function () {
+      pend = false;
+      var max = document.documentElement.scrollHeight - window.innerHeight;
+      prog.style.transform = 'scaleX(' + (max > 0 ? window.scrollY / max : 0) + ')';
+      bridges.forEach(function (b) { if (b.vis) bdraw(b); });
+    });
+  }
+  var bio = new IntersectionObserver(function (es) {
+    es.forEach(function (e) { bridges.forEach(function (b) { if (b.el === e.target) b.vis = e.isIntersecting; }); });
+    sched();
+  }, { rootMargin: '100px' });
+  bridges.forEach(function (b) { bsize(b); bio.observe(b.el); });
+  window.addEventListener('scroll', sched, { passive: true });
+  window.addEventListener('resize', function () { bridges.forEach(bsize); sched(); });
+  sched();
+
+  // Redraw dot colours when the system switches between light and dark
+  var mq = matchMedia('(prefers-color-scheme: dark)');
+  var onScheme = function () { readColors(); hf.size(); ff.size(); bridges.forEach(function (b) { if (b.vis) bdraw(b); }); };
+  if (mq.addEventListener) mq.addEventListener('change', onScheme); else if (mq.addListener) mq.addListener(onScheme);
+
+  // Work carousel
+  var tr = $('#track'), prev = $('#prev'), next = $('#next'), cur = $('#cur'), pg = $('#prog'), total = tr.children.length;
+  function step() {
+    var gap = parseFloat(getComputedStyle(tr).columnGap) || 0;
+    return tr.children[0].getBoundingClientRect().width + gap;
+  }
+  function upd() {
+    var s = step(), vis = Math.max(1, Math.round(tr.clientWidth / s));
+    var first = Math.min(Math.round(tr.scrollLeft / s) + 1, total - vis + 1), lastN = first + vis - 1;
+    cur.textContent = vis > 1 ? first + ' to ' + lastN + ' of ' + total : first + ' of ' + total;
+    pg.style.transform = 'scaleX(' + lastN / total + ')';
+    prev.disabled = tr.scrollLeft < 4;
+    next.disabled = tr.scrollLeft > tr.scrollWidth - tr.clientWidth - 4;
+  }
+  function go(dir) { tr.scrollBy({ left: dir * step(), behavior: reduced ? 'auto' : 'smooth' }); }
+  prev.addEventListener('click', function () { go(-1); });
+  next.addEventListener('click', function () { go(1); });
+  tr.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight') { e.preventDefault(); go(1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
+  });
+  tr.addEventListener('scroll', upd, { passive: true });
+  window.addEventListener('resize', upd);
+  upd();
+})();
+</script>
+</body>
+</html>
